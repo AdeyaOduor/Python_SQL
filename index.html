@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple RDBMS Web Interface</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Simple RDBMS Web Interface</h1>
+        
+        <div class="section">
+            <h2>📋 Database Tables</h2>
+            <div id="tables-list"></div>
+            <button onclick="loadTables()">Refresh Tables</button>
+        </div>
+        
+        <div class="section">
+            <h2>⚡ SQL Query</h2>
+            <textarea id="sql-query" placeholder="Enter SQL query here...">SELECT * FROM users</textarea>
+            <button onclick="executeQuery()">Execute Query</button>
+            <div id="query-results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>📝 Example Queries</h2>
+            <div class="examples">
+                <button onclick="setQuery('CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT UNIQUE, age INTEGER)')">Create Users Table</button>
+                <button onclick="setQuery("INSERT INTO users VALUES (1, 'Alice', 'alice@example.com', 25)")">Insert Sample Data</button>
+                <button onclick="setQuery('SELECT * FROM users')">Select All Users</button>
+                <button onclick="setQuery('UPDATE users SET age = 26 WHERE name = \'Alice\'')">Update User</button>
+                <button onclick="setQuery('CREATE INDEX idx_email ON users (email)')">Create Email Index</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    async function loadTables() {
+        const response = await fetch('/api/tables');
+        const data = await response.json();
+        
+        const tablesDiv = document.getElementById('tables-list');
+        tablesDiv.innerHTML = '';
+        
+        if (data.tables && data.tables.length > 0) {
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <tr>
+                    <th>Table Name</th>
+                    <th>Columns</th>
+                    <th>Rows</th>
+                    <th>Actions</th>
+                </tr>
+            `;
+            
+            data.tables.forEach(t => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${t.name}</td>
+                    <td>${t.columns}</td>
+                    <td>${t.rows}</td>
+                    <td><button onclick="viewTable('${t.name}')">View</button></td>
+                `;
+                table.appendChild(row);
+            });
+            
+            tablesDiv.appendChild(table);
+        } else {
+            tablesDiv.innerHTML = '<p>No tables in database</p>';
+        }
+    }
+    
+    async function executeQuery() {
+        const query = document.getElementById('sql-query').value;
+        const response = await fetch('/api/query', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({sql: query})
+        });
+        
+        const data = await response.json();
+        const resultsDiv = document.getElementById('query-results');
+        
+        if (response.ok) {
+            if (data.results && data.results.length > 0) {
+                const table = document.createElement('table');
+                
+                // Create headers
+                const headers = Object.keys(data.results[0]);
+                const headerRow = document.createElement('tr');
+                headers.forEach(h => {
+                    const th = document.createElement('th');
+                    th.textContent = h;
+                    headerRow.appendChild(th);
+                });
+                table.appendChild(headerRow);
+                
+                // Create data rows
+                data.results.forEach(row => {
+                    const dataRow = document.createElement('tr');
+                    headers.forEach(h => {
+                        const td = document.createElement('td');
+                        td.textContent = row[h] !== undefined ? row[h] : '';
+                        dataRow.appendChild(td);
+                    });
+                    table.appendChild(dataRow);
+                });
+                
+                resultsDiv.innerHTML = '';
+                resultsDiv.appendChild(table);
+                
+                // Also refresh tables list
+                loadTables();
+            } else {
+                resultsDiv.innerHTML = `<p>Query executed successfully: ${data.results?.[0]?.status || 'No results'}</p>`;
+            }
+        } else {
+            resultsDiv.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+        }
+    }
+    
+    function setQuery(sql) {
+        document.getElementById('sql-query').value = sql;
+    }
+    
+    async function viewTable(tableName) {
+        setQuery(`SELECT * FROM ${tableName}`);
+        await executeQuery();
+    }
+    
+    // Load tables on page load
+    loadTables();
+    </script>
+</body>
+</html>
