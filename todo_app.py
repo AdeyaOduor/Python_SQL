@@ -289,7 +289,7 @@ class TodoHandler(BaseHTTPRequestHandler):
 </head>
 <body>
     <div class="container">
-        <h1>✅ <span>Simple Todo App</span> using Custom RDBMS</h1>
+        <h1> <span>Simple Todo App</span> using Custom RDBMS</h1>
         
         <div class="todo-form">
             <h3>Add New Todo</h3>
