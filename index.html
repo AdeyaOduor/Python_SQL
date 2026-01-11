@@ -6,23 +6,23 @@
 </head>
 <body>
     <div class="container">
-        <h1>📊 Simple RDBMS Web Interface</h1>
+        <h1> Simple RDBMS Web Interface</h1>
         
         <div class="section">
-            <h2>📋 Database Tables</h2>
+            <h2> Database Tables</h2>
             <div id="tables-list"></div>
             <button onclick="loadTables()">Refresh Tables</button>
         </div>
         
         <div class="section">
-            <h2>⚡ SQL Query</h2>
+            <h2> SQL Query</h2>
             <textarea id="sql-query" placeholder="Enter SQL query here...">SELECT * FROM users</textarea>
             <button onclick="executeQuery()">Execute Query</button>
             <div id="query-results"></div>
         </div>
         
         <div class="section">
-            <h2>📝 Example Queries</h2>
+            <h2> Example Queries</h2>
             <div class="examples">
                 <button onclick="setQuery('CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT UNIQUE, age INTEGER)')">Create Users Table</button>
                 <button onclick="setQuery("INSERT INTO users VALUES (1, 'Alice', 'alice@example.com', 25)")">Insert Sample Data</button>
