@@ -1062,7 +1062,7 @@ def main():
         try:
             db.execute_sql("""
                 CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY,
+                    id INT AUTO_INCREMENT PRIMARY KEY,
                     name TEXT NOT NULL,
                     email TEXT UNIQUE,
                     age INTEGER
@@ -1071,9 +1071,9 @@ def main():
             
             db.execute_sql("""
                 INSERT INTO users VALUES 
-                (1, 'Alice Johnson', 'alice@example.com', 28),
-                (2, 'Bob Smith', 'bob@example.com', 32),
-                (3, 'Charlie Brown', 'charlie@example.com', 25)
+                ('Alice Johnson', 'alice@example.com', 28),
+                ('Bob Smith', 'bob@example.com', 32),
+                ('Charlie Brown', 'charlie@example.com', 25)
             """)
         except:
             pass
